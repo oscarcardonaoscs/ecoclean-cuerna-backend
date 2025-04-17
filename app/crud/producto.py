@@ -1,11 +1,21 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
+from datetime import datetime
 
 # Crear un producto
 
 
 def create_producto(db: Session, producto: schemas.ProductoCreate):
-    db_producto = models.Producto(**producto.dict())
+
+    db_producto = models.Producto(
+        nombre=producto.nombre,
+        precio=producto.precio,
+        precioExpress=producto.precioExpress,
+        tipo=producto.tipo,
+        esActivo=producto.esActivo,
+        fua=datetime.utcnow(),  # Fecha de creación del producto
+        seccion_id=producto.seccion_id,  # Suponiendo que el producto recibe la sección
+    )
     db.add(db_producto)
     db.commit()
     db.refresh(db_producto)
@@ -14,8 +24,18 @@ def create_producto(db: Session, producto: schemas.ProductoCreate):
 # Obtener todos los productos
 
 
-def get_productos(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Producto).offset(skip).limit(limit).all()
+def get_productos(db: Session, skip: int = 0, limit: int = 100, seccion_id: int = None, activo: bool = None):
+    query = db.query(models.Producto)
+
+    if seccion_id:
+        query = query.filter(models.Producto.seccion_id ==
+                             seccion_id)  # Filtrar por seccion_id
+
+    if activo is not None:
+        query = query.filter(models.Producto.esActivo ==
+                             activo)  # Filtrar por activo
+
+    return query.offset(skip).limit(limit).all()
 
 # Obtener un producto por ID
 
