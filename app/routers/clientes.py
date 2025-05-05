@@ -16,8 +16,14 @@ def create_cliente(cliente: schemas.ClienteCreate, db: Session = Depends(get_db)
 
 
 @router.get("/", response_model=list[schemas.ClienteResponse])
-def get_clientes(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_clientes(db=db, skip=skip, limit=limit)
+def get_clientes(
+    skip: int = 0,  # Paginación: Número de registros a omitir
+    limit: int = 100,  # Paginación: Límite de registros a devolver
+    search: str = "",  # Término de búsqueda
+    db: Session = Depends(get_db),
+):
+    clientes = crud.get_clientes(db=db, skip=skip, limit=limit, search=search)
+    return clientes
 
 # Obtener un cliente por su ID
 

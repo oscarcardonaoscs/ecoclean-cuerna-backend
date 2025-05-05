@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from app import models, schemas
-from datetime import datetime
+
 
 # Crear cliente
 
@@ -15,8 +16,14 @@ def create_cliente(db: Session, cliente: schemas.ClienteCreate):
 # Obtener todos los clientes
 
 
-def get_clientes(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Cliente).offset(skip).limit(limit).all()
+def get_clientes(db: Session, skip: int = 0, limit: int = 100, search: str = ""):
+    return db.query(models.Cliente).filter(
+        or_(
+            models.Cliente.nombre.ilike(f"%{search}%"),
+            models.Cliente.email.ilike(f"%{search}%"),
+            models.Cliente.telefono.ilike(f"%{search}%")
+        )
+    ).offset(skip).limit(limit).all()
 
 # Obtener un cliente por su ID
 

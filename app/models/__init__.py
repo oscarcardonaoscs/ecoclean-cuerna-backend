@@ -3,4 +3,6 @@ from .producto import Producto
 from .seccion import Seccion
 from .cliente import Cliente
 from .direccion import Direccion
-# Agrega aquí más importaciones para otros modelos
+from .pedido import Pedido
+from .partida_pedido import PartidaPedido
+from .pago import Pago

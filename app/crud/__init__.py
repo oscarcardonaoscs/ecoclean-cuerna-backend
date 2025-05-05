@@ -31,3 +31,5 @@ from .direccion import (
     update_direccion,
     delete_direccion
 )
+
+from .pedido import crear_pedido

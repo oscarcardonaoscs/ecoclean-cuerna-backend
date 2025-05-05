@@ -1,5 +1,7 @@
 from fastapi import APIRouter
+from app.routers import pedidos
 
 api_router = APIRouter()
 
-# Aquí incluyes tus rutas con include_router si las tienes
+# Incluyes el router aquí:
+api_router.include_router(pedidos.router)
