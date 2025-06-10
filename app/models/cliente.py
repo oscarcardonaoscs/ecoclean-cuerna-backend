@@ -19,6 +19,7 @@ class Cliente(Base):
     es_habilitado = Column(Boolean, default=True)
     fua = Column(DateTime, default=datetime.utcnow)
 
+    pedidos = relationship("Pedido", back_populates="cliente")
 # Relación con direcciones
     direcciones = relationship(
         "Direccion", back_populates="cliente")

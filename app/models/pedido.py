@@ -10,6 +10,7 @@ class Pedido(Base):
     id = Column(Integer, primary_key=True, index=True)
     folio = Column(String(20), unique=True, index=True, nullable=False)
     cliente_id = Column(Integer, ForeignKey("clientes.id"), nullable=False)
+    cliente = relationship("Cliente", back_populates="pedidos")
     fecha_creacion = Column(DateTime(timezone=True), default=datetime.utcnow)
     fecha_entrega = Column(DateTime, nullable=False)
     subtotal = Column(DECIMAL(10, 4), nullable=False, default=0)
@@ -30,3 +31,8 @@ class Pedido(Base):
         "PartidaPedido", back_populates="pedido", cascade="all, delete-orphan")
     pagos = relationship("Pago", back_populates="pedido",
                          cascade="all, delete-orphan")
+    historial_estatus = relationship(
+        "PedidoStatusHistory",
+        back_populates="pedido",
+        order_by="PedidoStatusHistory.creado_en"
+    )

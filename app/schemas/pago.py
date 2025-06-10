@@ -12,8 +12,11 @@ class PagoBase(BaseModel):
 
 
 class PagoCreate(PagoBase):
-    # Puede ser proporcionada o generada automáticamente
+    pedido_id: int
     fecha_pago: Optional[datetime] = None
+
+    class Config:
+        orm_mode = True
 
 
 class PagoOut(PagoBase):

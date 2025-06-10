@@ -1,9 +1,12 @@
 from sqlalchemy.orm import Session
 from datetime import datetime
+from decimal import Decimal
 from app.models.pedido import Pedido
 from app.models.partida_pedido import PartidaPedido
+from app.models.pedido_status_history import PedidoStatusHistory
 from app.models.pago import Pago
 from app import schemas
+from sqlalchemy.orm import selectinload
 
 
 def generar_folio(db: Session) -> str:
@@ -37,6 +40,7 @@ def crear_pedido(db: Session, pedido: schemas.PedidoCreate):
         folio=folio,
         cliente_id=pedido.cliente_id,
         fecha_entrega=pedido.fecha_entrega,
+        fecha_creacion=datetime.utcnow(),  # Fecha de creación del pedido
         subtotal=pedido.subtotal,
         descuento=pedido.descuento,
         envio=pedido.envio,
@@ -81,3 +85,59 @@ def crear_pedido(db: Session, pedido: schemas.PedidoCreate):
 
     db.commit()
     return db_pedido
+
+
+def obtener_todos_los_pedidos(db: Session):
+    """Obtiene todos los pedidos."""
+    return db.query(Pedido).all()
+
+
+def obtener_pedidos_por_estatus(db: Session, estatus: str):
+    """Obtiene los pedidos filtrados por estatus."""
+    return (
+        db.query(Pedido)
+        .options(selectinload(Pedido.cliente))  # Carga el cliente
+        .filter(Pedido.estatus == estatus)
+        .all()
+    )
+
+
+def obtener_pedido_por_id(db: Session, pedido_id: int) -> Pedido:
+    """Devuelve un pedido por su ID o None si no existe."""
+    return db.query(Pedido).filter(Pedido.id == pedido_id).first()
+
+
+def cancelar_pedido(db: Session, pedido: Pedido) -> Pedido:
+    """
+    Marca un pedido como cancelado y pone su total en 0.00.
+    Luego hace commit y refresh para devolver la entidad actualizada.
+    """
+    pedido.estatus = "Cancelado"
+    pedido.total = Decimal("0.00")
+    db.commit()
+    db.refresh(pedido)
+    return pedido
+
+
+def actualizar_estatus_pedido(
+    db: Session, pedido_id: int, nuevo_estatus: str
+) -> Pedido:
+    pedido = db.query(Pedido).filter(Pedido.id == pedido_id).first()
+    if not pedido:
+        return None
+
+    antiguo = pedido.estatus
+    pedido.estatus = nuevo_estatus
+    db.add(pedido)
+
+    # Registrar historial
+    hist = PedidoStatusHistory(
+        pedido_id=pedido_id,
+        estatus_anterior=antiguo,
+        estatus_nuevo=nuevo_estatus
+    )
+    db.add(hist)
+
+    db.commit()
+    db.refresh(pedido)
+    return pedido

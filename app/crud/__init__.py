@@ -32,4 +32,10 @@ from .direccion import (
     delete_direccion
 )
 
-from .pedido import crear_pedido
+from .pedido import (
+    crear_pedido,
+    obtener_todos_los_pedidos,
+    obtener_pedidos_por_estatus,
+    obtener_pedido_por_id,
+    cancelar_pedido
+)

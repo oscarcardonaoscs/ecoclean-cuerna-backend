@@ -7,6 +7,14 @@ from datetime import datetime
 from .direccion import DireccionCreate
 
 
+class ClienteSimple(BaseModel):
+    id: int
+    nombre: str
+
+    class Config:
+        orm_mode = True
+
+
 class ClienteCreate(BaseModel):
     nombre: str
     razon_social: Optional[str] = None

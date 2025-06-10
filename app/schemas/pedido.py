@@ -1,8 +1,21 @@
-from typing import List, Optional
+from typing import List, Optional, Literal
 from datetime import datetime
 from pydantic import BaseModel
 from app.schemas.partida_pedido import PartidaPedidoCreate, PartidaPedidoOut
 from app.schemas.pago import PagoCreate, PagoOut
+from .cliente import ClienteSimple
+
+
+class PedidoStatusUpdate(BaseModel):
+    estatus: Literal[
+        "Pendiente",
+        "En Proceso",
+        "Por Entregar",
+        "Por Recoger",
+        "Entregado",
+        "Enviado",
+        "Cancelado"
+    ]
 
 
 class PedidoBase(BaseModel):
@@ -33,6 +46,20 @@ class PedidoOut(PedidoBase):
     saldo: float
     partidas: List[PartidaPedidoOut]
     pagos: List[PagoOut]
+    cliente: ClienteSimple
 
     class Config:
         orm_mode = True
+
+
+class PedidoStatusHistoryOut(BaseModel):
+    id: int
+    pedido_id: int
+    estatus_anterior: str
+    estatus_nuevo: str
+    creado_en: datetime
+
+    # Pydantic v2: para permitir lectura desde atributos de SQLAlchemy
+    model_config = {
+        "from_attributes": True
+    }

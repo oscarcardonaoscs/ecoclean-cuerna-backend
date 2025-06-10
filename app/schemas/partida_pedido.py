@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
+from .producto import Producto
 
 
 class PartidaPedidoBase(BaseModel):
@@ -15,8 +16,10 @@ class PartidaPedidoCreate(PartidaPedidoBase):
 
 
 class PartidaPedidoOut(PartidaPedidoBase):
+
     id: int
     pedido_id: int
+    producto: Producto
 
     class Config:
         orm_mode = True

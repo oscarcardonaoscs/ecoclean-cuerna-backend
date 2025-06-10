@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, SessionLocal
 from app import models
 from app.core.config import settings
-from app.routers import productos, secciones, clientes, direcciones, pedidos
+from app.routers import productos, secciones, clientes, direcciones, pedidos, pagos
 
 
 # Crear las tablas en la base de datos
@@ -28,3 +28,4 @@ app.include_router(secciones.router, prefix="/secciones")
 app.include_router(clientes.router, prefix="/clientes")
 app.include_router(direcciones.router, prefix="/direcciones")
 app.include_router(pedidos.router, prefix="/pedidos")
+app.include_router(pagos.router, prefix="/pagos")

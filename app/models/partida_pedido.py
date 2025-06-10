@@ -16,3 +16,4 @@ class PartidaPedido(Base):
 
     # Relaciones
     pedido = relationship("Pedido", back_populates="partidas")
+    producto = relationship("Producto", lazy="joined")
